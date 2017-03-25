@@ -1,0 +1,12 @@
+
+body {
+	background: cornsilk;
+	background-image: url('./66.jpg');
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	font-size: 50px;
+}
+.redButton {
+	background-color: #f60;
+}
