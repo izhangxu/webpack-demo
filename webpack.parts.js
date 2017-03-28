@@ -15,8 +15,32 @@ const BabiliPlugin = require('babili-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const cssnano = require('cssnano');
 // 
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 
 const webpack = require('webpack');
+
+// 多页配置
+exports.page = ({
+	path = '',
+	template = require.resolve(
+		'html-webpack-plugin/default_index.ejs'
+	),
+	title,
+	entry,
+	chunks
+} = {}) => ({
+	entry,
+	plugins: [
+		new HtmlWebpackPlugin({
+			filename: `${path && path + '/'}index.html`,
+			template,
+			title,
+			chunks
+		}),
+	],
+});
+
 
 
 exports.dontParse = ({
@@ -213,9 +237,9 @@ exports.purifyCSS = ({
 exports.autoprefix = () => ({
 	loader: 'postcss-loader',
 	options: {
-		plugins: [
-			require('autoprefixer'),
-		],
+		plugins: () => ([
+			require('autoprefixer')
+		]),
 	},
 });
 // 热更新

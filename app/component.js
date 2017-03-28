@@ -1,7 +1,7 @@
 export default (text = 'Hello world') => {
 	const element = document.createElement('div');
 
-	element.innerHTML = text + '123222222222';
+	element.innerHTML = text + 'test122';
 
 	// element.className = 'pure-button';
 	element.className = 'fa fa-hand-spock-o fa-1g';
@@ -14,11 +14,11 @@ export default (text = 'Hello world') => {
 			console.error(e);
 		});
 	};*/
-	
-	element.onclick = ()=> {
+
+	element.onclick = () => {
 		require.ensure([], (require) => {
 			element.textContent = require('./lazy').default;
-		});
+		}, 'lazy');
 	};
 
 	return element;

@@ -14,13 +14,17 @@ const PATHS = {
 
 const commonConfig = merge(
 	[{
-			entry: {
-				app: PATHS.app,
-				vendor: ['react']
-			},
+			// entry: {
+			// 	app: PATHS.app,
+			// 	hmr: [
+			// 		'webpack-dev-server/client?http://localhost:8080',
+			// 		'webpack/hot/only-dev-server'
+			// 	],
+			// },
 			output: {
 				path: PATHS.build,
 				filename: '[name].js',
+				chunkFilename: '[name].js',
 			},
 			plugins: [
 				new HtmlWebpackPlugin({
@@ -35,7 +39,10 @@ const commonConfig = merge(
 			],
 		},
 		parts.lintJavaScript({
-			include: PATHS.app
+			include: PATHS.app,
+			options: {
+				formatter: require("eslint/lib/formatters/codeframe")
+			}
 		}),
 		parts.lintCSS({
 			files: '**/*.css',
@@ -68,7 +75,8 @@ const productionConfig = merge(
 			},
 			output: {
 				chunkFilename: '[name].[chunkhash:8].js',
-				filename: '[name].[chunkhash:8].js'
+				filename: '[name].[chunkhash:8].js',
+				publicPath: '/webpack-demo/'
 			},
 			plugins: [
 				new webpack.HashedModuleIdsPlugin(),
@@ -132,6 +140,10 @@ const developmentConfig = merge(
 			output: {
 				devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]',
 			}
+		}, {
+			plugins: [
+				new webpack.HotModuleReplacementPlugin()
+			]
 		},
 		parts.generateSourceMaps({
 			type: 'cheap-module-eval-source-map'
@@ -157,9 +169,32 @@ const developmentConfig = merge(
 	]);
 
 module.exports = (env) => {
-	if (env === 'production') {
-		return merge(commonConfig, productionConfig);
-	}
+	// if (env === 'production') {
+	// 	return merge(commonConfig, productionConfig);
+	// }
 
-	return merge(commonConfig, developmentConfig);
+	// return merge(commonConfig, developmentConfig);
+	const pages = [
+		parts.page({
+			title: 'Webpack demo',
+			entry: {
+				app: PATHS.app
+			},
+			chunks: ['app', 'manifest', 'vendor'],
+		}),
+		parts.page({
+			title: 'Another demo',
+			path: 'another',
+			entry: {
+				another: path.join(PATHS.app, 'another.js')
+			},
+			chunks: ['another', 'manifest', 'vendor'],
+		}),
+	];
+	const config = env === 'production' ?
+		productionConfig :
+		developmentConfig;
+
+	return merge([commonConfig, config].concat(pages));
+
 };
